@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Punjab University Detailed Marks Card</title>
+    <style type="text/css">
+        body {
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            font-family: 'Times New Roman', Times, serif;
+            color: #111;
+            max-width: 900px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .container {
+                border: none !important;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="resultContent" class="container">
+        <div style="text-align:center; margin-top:100px;">
+            <h3>Loading Result Details...</h3>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roll_number = urlParams.get('roll_number');
+            const semester = urlParams.get('semester');
+
+            if (!roll_number) {
+                document.getElementById('resultContent').innerHTML = '<h2 style="text-align:center;margin-top:50px;color:red;">Roll Number is required.</h2>';
+                return;
+            }
+
+            fetch('/api/result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roll_number, semester })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    if (data.message === 'Invalid captcha') {
+                        document.getElementById('resultContent').innerHTML = `
+                            <div style="text-align:center;margin-top:50px;font-family:Arial, sans-serif;">
+                                <h2 style="color:red;margin-bottom:10px;">Verification Required</h2>
+                                <p>Please solve the captcha on the homepage first.</p>
+                                <br/>
+                                <a href="/" style="font-weight:bold;color:#2563eb;text-decoration:underline;">Go to Homepage</a>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('resultContent').innerHTML = `
+                            <div style="text-align:center;margin-top:50px;font-family:Arial, sans-serif;">
+                                <h2 style="color:red;margin-bottom:10px;">Result Not Found</h2>
+                                <p>${data.message}</p>
+                                <br/>
+                                <a href="/" style="font-weight:bold;color:#2563eb;text-decoration:underline;">Back to Search</a>
+                            </div>
+                        `;
+                    }
+                } else {
+                    renderResultSheet(data.data);
+                }
+            })
+            .catch(err => {
+                document.getElementById('resultContent').innerHTML = '<h2 style="text-align:center;margin-top:50px;color:red;">Failed to retrieve result. Please try again.</h2>';
+            });
+        });
+
+        function renderResultSheet(student) {
+            let subjects = [];
+            try {
+                subjects = JSON.parse(student.subjects || '[]');
+            } catch(e) {
+                console.error("Error parsing subjects JSON", e);
+            }
+            
+            let subjectsHtml = '';
+            subjects.forEach(sub => {
+                subjectsHtml += `
+                    <tr>
+                        <td style="padding: 8px 12px; text-align: left; border: 1px solid #ccc; font-family: Arial, sans-serif; color: #333;">${sub.name}</td>
+                        <td style="padding: 8px 12px; text-align: center; border: 1px solid #ccc; font-weight: bold; width: 100px; font-family: Arial, sans-serif;">${sub.credits}</td>
+                        <td style="padding: 8px 12px; text-align: center; border: 1px solid #ccc; font-weight: bold; width: 100px; font-family: Arial, sans-serif;">${sub.grade}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('resultContent').innerHTML = `
+                <!-- Header / Logo -->
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <img src="/images/logo7.jpg" alt="Punjab University Logo" style="width: 100px; height: 100px; border-radius: 50%; display: block; margin: 0 auto 10px auto;">
+                    <h2 style="font-family: Georgia, serif; font-size: 24px; font-weight: bold; margin: 0 0 5px 0;">Punjab University</h2>
+                    <div style="font-family: Georgia, serif; font-size: 14px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; color: #333;">
+                        PROVISIONAL RESULT-cum-DETAILED MARKS (${student.semester})
+                    </div>
+                    <div style="color: #0d6efd; font-weight: bold; text-decoration: none; font-size: 14px; font-family: Arial, sans-serif;">
+                        Bachelor of Science (FYUP) 1st Semester
+                    </div>
+                </div>
+
+                <!-- Student Info -->
+                <div style="text-align: left; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; margin-bottom: 20px; border-bottom: 1px dashed #ccc; padding-bottom: 15px;">
+                    <div><b>Roll No. :</b> ${student.roll_number}</div>
+                    <div><b>Regd. No. :</b> ${student.regd_no || ''}</div>
+                    <div><b>Name :</b> ${student.student_name.toUpperCase()}</div>
+                    <div><b>Father's Name :</b> ${student.father_name || ''}</div>
+                    <div><b>Mother's Name :</b> ${student.mother_name || ''}</div>
+                </div>
+
+                <!-- Detail of Marks Title -->
+                <div style="text-align: center; font-family: Georgia, serif; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+                    Detail of Marks
+                </div>
+
+                <!-- Detail of Marks Table -->
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 15px;" border="1" bordercolor="#ccc">
+                    <thead>
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 8px 12px; text-align: left; font-weight: bold; border: 1px solid #ccc;">Subject Name</th>
+                            <th style="padding: 8px 12px; text-align: center; font-weight: bold; border: 1px solid #ccc;">Credits</th>
+                            <th style="padding: 8px 12px; text-align: center; font-weight: bold; border: 1px solid #ccc;">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${subjectsHtml}
+                    </tbody>
+                </table>
+
+                <!-- SGPA Summary -->
+                <div style="text-align: right; font-family: Arial, sans-serif; margin-bottom: 20px;">
+                    <div style="font-weight: bold; color: #d97706; font-size: 14px;">
+                        ${student.marks}
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <a href="/frmShowDetailedMarksCard.aspx?roll_number=${student.roll_number}&semester=${student.semester}" target="_blank" class="no-print" style="color: #2563eb; text-decoration: underline; font-size: 13px; font-weight: bold;">View Detailed Marks</a>
+                    </div>
+                </div>
+
+                <!-- Dates & Note -->
+                <div style="text-align: left; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; margin-bottom: 20px;">
+                    <div><b>Date of Result Declaration:</b> ${student.declaration_date || 'May 15 2026'}</div>
+                    <div style="font-size: 10px; color: #666; margin-top: 3px;">TH=Theory, PR=Practical, IN=Internal Assessment</div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div style="text-align: left; font-family: Arial, sans-serif; font-size: 11px; color: #555; line-height: 1.6; border-top: 1px solid #ddd; padding-top: 10px; margin-bottom: 20px;">
+                    Punjab University is not responsible for any inadvertent error that may have crept in the results being published on INTERNET(http://results.puexam.in). The results published on internet are for immediate information to the examinees. These can not be treated as final results. Original detail mark sheets have been issued by the University separately.
+                </div>
+
+                <!-- Grade Scale Table -->
+                <div style="font-family: Georgia, serif; font-size: 12px; font-weight: bold; margin-bottom: 8px; text-align: left;">
+                    Grading Reference Scale:
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 11px; text-align: center; margin-bottom: 10px;" border="1" bordercolor="#ccc">
+                    <thead>
+                        <tr style="background-color: #f1f3f5; font-weight: bold;">
+                            <th style="padding: 5px; border: 1px solid #ccc;">Percentage Marks (PM)</th>
+                            <th style="padding: 5px; border: 1px solid #ccc;">Grade Point</th>
+                            <th style="padding: 5px; border: 1px solid #ccc;">Letter Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">95&lt;PM&lt;=100</td><td style="padding: 4px; border: 1px solid #ccc;">10</td><td style="padding: 4px; border: 1px solid #ccc;">O (Outstanding)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">85&lt;PM&lt;=95</td><td style="padding: 4px; border: 1px solid #ccc;">9</td><td style="padding: 4px; border: 1px solid #ccc;">A+ (Excellent)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">75&lt;PM&lt;=85</td><td style="padding: 4px; border: 1px solid #ccc;">8</td><td style="padding: 4px; border: 1px solid #ccc;">A (Very Good)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">65&lt;PM&lt;=75</td><td style="padding: 4px; border: 1px solid #ccc;">7</td><td style="padding: 4px; border: 1px solid #ccc;">B+ (Good)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">55&lt;PM&lt;=65</td><td style="padding: 4px; border: 1px solid #ccc;">6</td><td style="padding: 4px; border: 1px solid #ccc;">B (Above Average)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">45&lt;PM&lt;=55</td><td style="padding: 4px; border: 1px solid #ccc;">5</td><td style="padding: 4px; border: 1px solid #ccc;">C (Average)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">40&lt;PM&lt;=45</td><td style="padding: 4px; border: 1px solid #ccc;">4</td><td style="padding: 4px; border: 1px solid #ccc;">P (Pass)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">PM&lt;40</td><td style="padding: 4px; border: 1px solid #ccc;">0</td><td style="padding: 4px; border: 1px solid #ccc;">F (Fail)</td></tr>
+                        <tr><td style="padding: 4px; border: 1px solid #ccc;">Absent</td><td style="padding: 4px; border: 1px solid #ccc;">0</td><td style="padding: 4px; border: 1px solid #ccc;">-</td></tr>
+                    </tbody>
+                </table>
+            `;
+        }
+    </script>
+</body>
+</html>

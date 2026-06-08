@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="logo-area">
+                <div class="logo-icon">PU</div>
+                <h1>Punjab University</h1>
+            </div>
+            <div class="user-profile">
+                <span class="role">Administrator</span>
+                <div class="avatar">A</div>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="panel glass-panel">
+                <div class="panel-header">
+                    <h2>Add New Result</h2>
+                    <p>Enter the student details to publish their result.</p>
+                </div>
+                
+                <form id="addResultForm" class="admin-form">
+                    <div id="statusMsg" class="status-message"></div>
+                    
+                    <div class="form-group">
+                        <label for="student_name">Student Name</label>
+                        <input type="text" id="student_name" placeholder="e.g. John Doe" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roll_number">Roll Number</label>
+                            <input type="text" id="roll_number" placeholder="e.g. PU123456" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="semester">Semester</label>
+                            <select id="semester" required style="max-height: 200px; overflow-y: auto;">
+                                <option value="April/May,2026">April/May,2026</option>
+                                <option value="December,2025" selected>December,2025</option>
+                                <option value="May,2025">May,2025</option>
+                                <option value="December,2024">December,2024</option>
+                                <option value="May,2024">May,2024</option>
+                                <option value="December,2023">December,2023</option>
+                                <option value="May,2023">May,2023</option>
+                                <option value="December,2022">December,2022</option>
+                                <option value="June/July,2022">June/July,2022</option>
+                                <option value="December,2021">December,2021</option>
+                                <option value="May/June,2021">May/June,2021</option>
+                                <option value="December,2020 /February,2021">December,2020 /February,2021</option>
+                                <option value="September,2020 /January, 2021">September,2020 /January, 2021</option>
+                                <option value="December,2019">December,2019</option>
+                                <option value="September,2019">September,2019</option>
+                                <option value="May,2019">May,2019</option>
+                                <option value="December,2018">December,2018</option>
+                                <option value="November,2018">November,2018</option>
+                                <option value="May,2018">May,2018</option>
+                                <option value="December,2017">December,2017</option>
+                                <option value="May,2017">May,2017</option>
+                                <option value="December,2016">December,2016</option>
+                                <option value="May,2016">May,2016</option>
+                                <option value="December,2015">December,2015</option>
+                                <option value="May,2015">May,2015</option>
+                                <option value="December,2014">December,2014</option>
+                                <option value="October,2016">October,2016</option>
+                                <option value="April,2016">April,2016</option>
+                                <option value="April,2015">April,2015</option>
+                                <option value="October,2015">October,2015</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="marks">Total Marks / CGPA / SGPA</label>
+                            <input type="text" id="marks" placeholder="e.g. SGPA: 8.5 / R [PHYDSC1]" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" required>
+                                <option value="PASS">PASS</option>
+                                <option value="FAIL">FAIL</option>
+                                <option value="COMPARTMENT">COMPARTMENT</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="regd_no">Registration No.</label>
+                            <input type="text" id="regd_no" placeholder="e.g. 18025003370" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="declaration_date">Declaration Date</label>
+                            <input type="text" id="declaration_date" placeholder="e.g. May 15 2026" value="May 15 2026" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="father_name">Father's Name</label>
+                            <input type="text" id="father_name" placeholder="e.g. GURJIT SINGH" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mother_name">Mother's Name</label>
+                            <input type="text" id="mother_name" placeholder="e.g. KULBIR KAUR" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subjects & Detailed Marks</label>
+                        <div id="subjectsEditorContainer"></div>
+                    </div>
+                    
+                    <div class="btn-row">
+                        <button type="submit" class="btn-primary">
+                            <span id="submitBtnText">Publish Result</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                        <button type="button" id="cancelEditBtn" class="btn-secondary" style="display:none;" onclick="cancelEdit()">Cancel Edit</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel glass-panel list-panel">
+                <div class="panel-header">
+                    <h2>Recent Results</h2>
+                    <button class="btn-secondary" onclick="loadResults()">Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Name</th>
+                                <th>Semester</th>
+                                <th>Marks</th>
+                                <th>Status</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Results will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let editingId = null;
+        let allResults = [];
+        let currentSubjects = [];
+
+        const defaultSubjects = [
+            { name: "Mechanics", credits: "4", grade: "B", th_a: "45", th_b: "-", th_c: "-", pr_a: "15", pr_b: "-", in_a: "12", in_b: "4", total: "76" },
+            { name: "Algebra &Trigonometry", credits: "4", grade: "C", th_a: "36", th_b: "-", th_c: "-", pr_a: "-", pr_b: "-", in_a: "10", in_b: "-", total: "46" },
+            { name: "Computer Fundamentals and PC Software", credits: "4", grade: "B", th_a: "35", th_b: "-", th_c: "-", pr_a: "-", pr_b: "-", in_a: "15", in_b: "-", total: "50" },
+            { name: "Foundations of Biotechnology-I", credits: "3", grade: "C", th_a: "32", th_b: "-", th_c: "-", pr_a: "10", pr_b: "-", in_a: "6", in_b: "2", total: "50" },
+            { name: "Fundamental of web Designing", credits: "3", grade: "B+", th_a: "50", th_b: "-", th_c: "-", pr_a: "-", pr_b: "-", in_a: "6", in_b: "-", total: "56" },
+            { name: "Environment Science", credits: "2", grade: "C", th_a: "36", th_b: "-", th_c: "-", pr_a: "-", pr_b: "-", in_a: "8", in_b: "-", total: "44" },
+            { name: "Punjabi Kavita Ate Vyakaran", credits: "2", grade: "C", th_a: "35", th_b: "-", th_c: "-", pr_a: "-", pr_b: "-", in_a: "5", in_b: "-", total: "40" },
+            { name: "Language Skills: Listening and Speaking", credits: "2", grade: "B", th_a: "38", th_b: "-", th_c: "-", pr_a: "12", pr_b: "-", in_a: "4", in_b: "-", total: "54" }
+        ];
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function resetSubjects() {
+            currentSubjects = JSON.parse(JSON.stringify(defaultSubjects));
+            renderSubjectsEditor();
+        }
+
+        function addSubjectRow() {
+            currentSubjects.push({
+                name: "",
+                credits: "0",
+                grade: "",
+                th_a: "-",
+                th_b: "-",
+                th_c: "-",
+                pr_a: "-",
+                pr_b: "-",
+                in_a: "-",
+                in_b: "-",
+                total: "-"
+            });
+            renderSubjectsEditor();
+        }
+
+        function removeSubject(index) {
+            currentSubjects.splice(index, 1);
+            renderSubjectsEditor();
+        }
+
+        function updateSubjectField(index, field, value) {
+            currentSubjects[index][field] = value;
+        }
+
+        function renderSubjectsEditor() {
+            const container = document.getElementById('subjectsEditorContainer');
+            if (!container) return;
+            
+            let html = `
+                <div class="subjects-table-wrapper" style="overflow-x: auto; max-width: 100%;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                        <thead>
+                            <tr>
+                                <th class="subj-name-col">Subject Name</th>
+                                <th class="subj-small-col">Credits</th>
+                                <th class="subj-small-col">Grade</th>
+                                <th class="subj-small-col">Th.(A)</th>
+                                <th class="subj-small-col">Th.(B)</th>
+                                <th class="subj-small-col">Th.(C)</th>
+                                <th class="subj-small-col">Pr.(A)</th>
+                                <th class="subj-small-col">Pr.(B)</th>
+                                <th class="subj-small-col">In.(A)</th>
+                                <th class="subj-small-col">In.(B)</th>
+                                <th class="subj-small-col">Total</th>
+                                <th style="text-align: center; width: 80px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if (currentSubjects.length === 0) {
+                html += `
+                    <tr>
+                        <td colspan="12" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                            No subjects added yet. Click "+ Add Subject" to add.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                currentSubjects.forEach((sub, index) => {
+                    html += `
+                        <tr>
+                            <td>
+                                <input type="text" class="subj-input" value="${escapeHtml(sub.name || '')}" onchange="updateSubjectField(${index}, 'name', this.value)" placeholder="e.g. Mechanics" required>
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.credits || '0')}" onchange="updateSubjectField(${index}, 'credits', this.value)" placeholder="0" required>
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.grade || '')}" onchange="updateSubjectField(${index}, 'grade', this.value)" placeholder="F" required>
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.th_a || '-')}" onchange="updateSubjectField(${index}, 'th_a', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.th_b || '-')}" onchange="updateSubjectField(${index}, 'th_b', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.th_c || '-')}" onchange="updateSubjectField(${index}, 'th_c', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.pr_a || '-')}" onchange="updateSubjectField(${index}, 'pr_a', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.pr_b || '-')}" onchange="updateSubjectField(${index}, 'pr_b', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.in_a || '-')}" onchange="updateSubjectField(${index}, 'in_a', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center;" value="${escapeHtml(sub.in_b || '-')}" onchange="updateSubjectField(${index}, 'in_b', this.value)">
+                            </td>
+                            <td>
+                                <input type="text" class="subj-input" style="text-align:center; font-weight: bold;" value="${escapeHtml(sub.total || '-')}" onchange="updateSubjectField(${index}, 'total', this.value)">
+                            </td>
+                            <td style="text-align: center;">
+                                <button type="button" class="btn-action btn-delete" onclick="removeSubject(${index})">Remove</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn-secondary" style="margin-top: 10px; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem;" onclick="addSubjectRow()">
+                    + Add Subject
+                </button>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        document.getElementById('addResultForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (currentSubjects.length === 0) {
+                alert("Please add at least one subject!");
+                return;
+            }
+
+            const data = {
+                student_name: document.getElementById('student_name').value.trim(),
+                roll_number: document.getElementById('roll_number').value.trim(),
+                semester: document.getElementById('semester').value,
+                marks: document.getElementById('marks').value.trim(),
+                status: document.getElementById('status').value,
+                regd_no: document.getElementById('regd_no').value.trim(),
+                declaration_date: document.getElementById('declaration_date').value.trim(),
+                father_name: document.getElementById('father_name').value.trim(),
+                mother_name: document.getElementById('mother_name').value.trim(),
+                subjects: JSON.stringify(currentSubjects)
+            };
+
+            if (editingId) {
+                data.id = editingId;
+            }
+            
+            fetch('/api/admin/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                const msgEl = document.getElementById('statusMsg');
+                msgEl.style.display = 'block';
+                if(data.success) {
+                    msgEl.className = 'status-message success';
+                    msgEl.innerText = data.message;
+                    cancelEdit(); // Reset form and edit state
+                    loadResults();
+                } else {
+                    msgEl.className = 'status-message error';
+                    msgEl.innerText = data.message;
+                }
+                
+                setTimeout(() => {
+                    msgEl.style.display = 'none';
+                }, 4000);
+            })
+            .catch(err => {
+                console.error(err);
+            });
+        });
+
+        function editResult(id) {
+            const result = allResults.find(r => r.id === id);
+            if (!result) return;
+            
+            editingId = id;
+            document.getElementById('student_name').value = result.student_name;
+            document.getElementById('roll_number').value = result.roll_number;
+            document.getElementById('semester').value = result.semester;
+            document.getElementById('marks').value = result.marks;
+            document.getElementById('status').value = result.status;
+            document.getElementById('regd_no').value = result.regd_no || '';
+            document.getElementById('declaration_date').value = result.declaration_date || '';
+            document.getElementById('father_name').value = result.father_name || '';
+            document.getElementById('mother_name').value = result.mother_name || '';
+            
+            try {
+                currentSubjects = JSON.parse(result.subjects || '[]');
+            } catch (e) {
+                console.error("Error parsing subjects JSON", e);
+                currentSubjects = [];
+            }
+            renderSubjectsEditor();
+            
+            document.getElementById('submitBtnText').innerText = "Update Result";
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+            
+            document.getElementById('addResultForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('addResultForm').reset();
+            resetSubjects();
+            document.getElementById('submitBtnText').innerText = "Publish Result";
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        }
+
+        function deleteResult(id, rollNumber) {
+            if (confirm(`Are you sure you want to delete the result for Roll Number: ${rollNumber}?`)) {
+                fetch(`/api/admin/delete/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const msgEl = document.getElementById('statusMsg');
+                    msgEl.style.display = 'block';
+                    if (data.success) {
+                        msgEl.className = 'status-message success';
+                        msgEl.innerText = data.message;
+                        loadResults();
+                        if (editingId === id) {
+                            cancelEdit();
+                        }
+                    } else {
+                        msgEl.className = 'status-message error';
+                        msgEl.innerText = data.message;
+                    }
+                    setTimeout(() => {
+                        msgEl.style.display = 'none';
+                    }, 4000);
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+            }
+        }
+
+        function loadResults() {
+            fetch('/api/admin/results')
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    allResults = data.data;
+                    const tbody = document.getElementById('resultsTableBody');
+                    tbody.innerHTML = '';
+                    allResults.forEach(row => {
+                        const tr = document.createElement('tr');
+                        
+                        let statusClass = 'status-pass';
+                        if(row.status === 'FAIL') statusClass = 'status-fail';
+                        else if(row.status === 'COMPARTMENT') statusClass = 'status-comp';
+
+                        tr.innerHTML = `
+                            <td>${row.roll_number}</td>
+                            <td class="fw-500">${row.student_name}</td>
+                            <td>${row.semester}</td>
+                            <td>${row.marks}</td>
+                            <td><span class="status-badge ${statusClass}">${row.status}</span></td>
+                            <td style="text-align: center;">
+                                <div class="action-buttons">
+                                    <button class="btn-action" onclick="editResult(${row.id})">Edit</button>
+                                    <button class="btn-action btn-delete" onclick="deleteResult(${row.id}, '${row.roll_number}')">Delete</button>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            });
+        }
+
+        window.onload = function() {
+            resetSubjects();
+            loadResults();
+        };
+    </script>
+</body>
+</html>

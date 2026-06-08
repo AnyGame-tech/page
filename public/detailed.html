@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Punjab University Detailed Marks Verification</title>
+    <style type="text/css">
+        body {
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            color: #111;
+            max-width: 950px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        .marks-table th {
+            padding: 6px;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .marks-table th:first-child {
+            text-align: left;
+        }
+        .marks-table td {
+            padding: 6px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .marks-table td:first-child {
+            text-align: left;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .container {
+                border: none !important;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="detailedContent" class="container">
+        <div style="text-align:center; margin-top:100px;">
+            <h3>Loading Marks Verification Details...</h3>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roll_number = urlParams.get('roll_number');
+            const semester = urlParams.get('semester');
+
+            if (!roll_number) {
+                document.getElementById('detailedContent').innerHTML = '<h2 style="text-align:center;margin-top:50px;color:red;">Roll Number is required.</h2>';
+                return;
+            }
+
+            fetch('/api/result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roll_number, semester })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    document.getElementById('detailedContent').innerHTML = `
+                        <div style="text-align:center;margin-top:50px;font-family:Arial, sans-serif;">
+                            <h2 style="color:red;margin-bottom:10px;">Error Loading Details</h2>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                } else {
+                    renderDetailedVerification(data.data);
+                }
+            })
+            .catch(err => {
+                document.getElementById('detailedContent').innerHTML = '<h2 style="text-align:center;margin-top:50px;color:red;">Failed to retrieve details.</h2>';
+            });
+        });
+
+        function renderDetailedVerification(student) {
+            let subjects = [];
+            try {
+                subjects = JSON.parse(student.subjects || '[]');
+            } catch(e) {
+                console.error("Error parsing subjects JSON", e);
+            }
+            
+            let subjectsHtml = '';
+            subjects.forEach(sub => {
+                subjectsHtml += `
+                    <tr>
+                        <td style="color: #333;">${sub.name}</td>
+                        <td>${sub.th_a || '-'}</td>
+                        <td>${sub.th_b || '-'}</td>
+                        <td>${sub.th_c || '-'}</td>
+                        <td>${sub.pr_a || '-'}</td>
+                        <td>${sub.pr_b || '-'}</td>
+                        <td>${sub.in_a || '-'}</td>
+                        <td>${sub.in_b || '-'}</td>
+                        <td style="font-weight: bold;">${sub.total || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('detailedContent').innerHTML = `
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h2 style="color: #1e40af; font-size: 26px; font-weight: 500; margin: 0 0 5px 0;">Punjab University</h2>
+                    <div style="color: #3b82f6; font-weight: 500; font-size: 14px;">
+                        Bachelor of Science (FYUP) 1st Semester (${student.semester})
+                    </div>
+                </div>
+
+                <!-- Student Particulars -->
+                <div style="text-align: left; font-size: 14px; line-height: 1.6; margin-bottom: 20px; padding-bottom: 15px;">
+                    <div><b>Roll No. :</b> ${student.roll_number}</div>
+                    <div><b>Regd. No. :</b> ${student.regd_no || ''}</div>
+                    <div><b>Name :</b> ${student.student_name.toUpperCase()}</div>
+                    <div><b>Father's Name :</b> ${student.father_name || ''}</div>
+                    <div><b>Mother's Name :</b> ${student.mother_name || ''}</div>
+                </div>
+
+                <!-- Detail of Marks Title -->
+                <div style="text-align: center; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+                    Detail of Marks
+                </div>
+
+                <!-- Detailed Marks Table -->
+                <table class="marks-table">
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Th. (A)</th>
+                            <th>Th. (B)</th>
+                            <th>Th. (C)</th>
+                            <th>Pr. (A)</th>
+                            <th>Pr. (B)</th>
+                            <th>In. (A)</th>
+                            <th>In. (B)</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${subjectsHtml}
+                    </tbody>
+                </table>
+
+                <!-- SGPA Summary -->
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <div style="font-weight: bold; color: #d97706; font-size: 14px;">
+                        ${student.marks}
+                    </div>
+                </div>
+
+                <!-- Dates & Note -->
+                <div style="text-align: left; font-size: 12px; line-height: 1.5; margin-bottom: 25px;">
+                    <div><b>Date of Result Declaration:</b> ${student.declaration_date || 'May 15 2026'}</div>
+                    <div style="font-size: 10px; color: #666; margin-top: 3px;">TH=Theory, PR=Practical, IN=Internal Assessment</div>
+                </div>
+
+                <!-- Re-evaluation Disclaimer -->
+                <div style="text-align: left; font-size: 13px; font-weight: bold; color: #111; margin-bottom: 30px;">
+                    This detail is only to verify marks for the purpose of Re-evaluation.
+                </div>
+
+                <!-- Go Back Action button -->
+                <div style="text-align: center;" class="no-print">
+                    <input type="button" value="Go Back" onclick="window.close()" style="font-weight: bold; padding: 6px 20px; font-size: 13px; cursor: pointer; border-radius: 4px; background: #f8f9fa; border: 1px solid #ccc;">
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
